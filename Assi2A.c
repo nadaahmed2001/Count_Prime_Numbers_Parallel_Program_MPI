@@ -11,10 +11,10 @@ int count;
 int subPrimes[1000];
 int main(int argc, char* argv[])
 {
-    clock_t start, end;
-    double duration;
+    	clock_t start, end;
+    	double duration;
 	int pid, np, elements_per_process, lower_bound, upper_bound,total_count=0;
-    int n_elements_recieved;//for slaves
+    	int n_elements_recieved;//for slaves
 	MPI_Status status;
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &pid);
@@ -29,8 +29,8 @@ int main(int argc, char* argv[])
         printf("Enter lower bound:\n");
         scanf("%d",&lower_bound);
         
-		//Read array
-		printf("Enter upper bound:\n");
+	//Read array
+	printf("Enter upper bound:\n");
         scanf("%d",&upper_bound);
 
         fullRange = upper_bound - lower_bound;
