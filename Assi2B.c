@@ -11,53 +11,56 @@ int main(int argc, char* argv[])
 {
     clock_t start, end;
     double duration;
-	int pid, np, elements_per_process, lower_bound, upper_bound;//for master
+    int pid, np, elements_per_process, lower_bound, upper_bound;//for master
     int my_lower_bound, my_upper_bound,n_elements_recieved;//for slaves
-	MPI_Status status;
-	MPI_Init(&argc, &argv);
-    
-	MPI_Comm_rank(MPI_COMM_WORLD, &pid);
-	MPI_Comm_size(MPI_COMM_WORLD, &np);
+    MPI_Status status;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
+    MPI_Comm_size(MPI_COMM_WORLD, &np);
 
-	//----------------------master process---------------------------------
-	if (pid == 0) {
+    //----------------------master process---------------------------------
+    if (pid == 0)
+    {
         printf("Hello from master process.\n");
         printf("Number of slave processes is %d\n",np-1);
         //Read size of array
         printf("Enter lower bound:\n");
         scanf("%d",&lower_bound);
-        
-		//Read array
-		printf("Enter upper bound:\n");
+
+        //Read array
+        printf("Enter upper bound:\n");
         scanf("%d",&upper_bound);
 
         arraySize = upper_bound - lower_bound;
-        
+
         //generate array from lower bound to upper bound
-        for(int i=0;i<arraySize;i++)
+        for(int i=0; i<arraySize; i++)
         {
             a[i] = lower_bound + i;
         }
 
         //print array///////////////////////////////////////////////////////////////////////////////////////////
         printf("Array is:\n");
-        for(int i=0;i<arraySize;i++)
+        for(int i=0; i<arraySize; i++)
         {
             printf("%d ",a[i]);
         }
         printf("\n");
         ///////////////////////////////////////////////////////////////////////////////////////////
         start = clock();
-		
-		int index, i;
-		elements_per_process = arraySize / (np-1);
 
-		if (np > 1) {
+        int index, i;
+        elements_per_process = arraySize / (np-1);
 
-			if(arraySize % (np-1) == 0){//array size is divisible by no. of processes
-			// distributes the portion of array to child processes to calculate their local_maximums
-				for (i = 1; i < np; i++) {
-					index = (i-1) * elements_per_process;
+        if (np > 1)
+        {
+
+            if(arraySize % (np-1) == 0) //array size is divisible by no. of processes
+            {
+                // distributes the portion of array to child processes to calculate their local_maximums
+                for (i = 1; i < np; i++)
+                {
+                    index = (i-1) * elements_per_process;
                     lower_bound = a[index];
                     //send lower bound
                     MPI_Send(&lower_bound,1,MPI_INT,i,1,MPI_COMM_WORLD);
@@ -65,36 +68,38 @@ int main(int argc, char* argv[])
                     MPI_Send(&elements_per_process,1,MPI_INT,i,2,MPI_COMM_WORLD);
                 }//end for
 
-			}else{//array size is not divisible by no. of processes
-				for (i = 1; i < np-1; i++) {
-					index = (i-1) * elements_per_process;
+            }
+            else  //array size is not divisible by no. of processes
+            {
+                for (i = 1; i < np-1; i++)
+                {
+                    index = (i-1) * elements_per_process;
                     lower_bound = a[index];
                     //send lower bound
                     MPI_Send(&lower_bound,1,MPI_INT,i,1,MPI_COMM_WORLD);
                     //send sub array size
                     MPI_Send(&elements_per_process,1,MPI_INT,i,2,MPI_COMM_WORLD);
+                }//end for
 
-				}//end for
-
-				// last process handles remaining elements
-				index = (i-1) * elements_per_process;
-				int remaining_elements = arraySize - (i*elements_per_process);
-				int Last_process_portion=elements_per_process+remaining_elements;
+                // last process handles remaining elements
+                index = (i-1) * elements_per_process;
+                int remaining_elements = arraySize - (i*elements_per_process);
+                int Last_process_portion=elements_per_process+remaining_elements;
                 lower_bound = a[index];
                 //send lower bound
                 MPI_Send(&lower_bound,1,MPI_INT,i,1,MPI_COMM_WORLD);
                 //send sub array size
                 MPI_Send(&Last_process_portion,1,MPI_INT,i,2,MPI_COMM_WORLD);
-				
 
-			}//end else
-		}//end if
+
+            }//end else
+        }//end if
 
         //collect results from slave processes
         int total_count = 0;
         int finalArrayOfPrimeNumbers[arraySize];
         int finalArrayCounter = 0;
-        for(int i=1;i<np;i++)
+        for(int i=1; i<np; i++)
         {
             int count;
             int lower,upper;
@@ -107,10 +112,10 @@ int main(int argc, char* argv[])
             for (int j = 0; j < count; j++)
             {
                 MPI_Recv(&subArrayOfPrimeNumbers[j],1,MPI_INT,i,6,MPI_COMM_WORLD,&status);
-               finalArrayOfPrimeNumbers[finalArrayCounter] = subArrayOfPrimeNumbers[j];
-               finalArrayCounter++;
+                finalArrayOfPrimeNumbers[finalArrayCounter] = subArrayOfPrimeNumbers[j];
+                finalArrayCounter++;
             }
-            
+
             printf("P%d: calculated partial count of prime numbers from %d to %d -> %d ",i,lower,upper,count);
             printf("{");
             for (int j = 0; j < count; j++)
@@ -120,7 +125,8 @@ int main(int argc, char* argv[])
                     printf("%d",subArrayOfPrimeNumbers[j]);
                     printf("}");
                 }
-                else printf("%d ,",subArrayOfPrimeNumbers[j]);
+                else
+                    printf("%d ,",subArrayOfPrimeNumbers[j]);
 
             }
             printf("\n");
@@ -140,18 +146,20 @@ int main(int argc, char* argv[])
                 printf("%d",finalArrayOfPrimeNumbers[j]);
                 printf("}");
             }
-            else printf("%d ,",finalArrayOfPrimeNumbers[j]);
+            else
+                printf("%d ,",finalArrayOfPrimeNumbers[j]);
 
         }
         printf("\n");
 
         printf("Time taken to execute in seconds : %f \n", duration);
 
-	
-	}
 
-	//----------------------slave processes---------------------------------
-	else {
+    }
+
+    //----------------------slave processes---------------------------------
+    else
+    {
         //recieve lower bound
         MPI_Recv(&my_lower_bound,1,MPI_INT,0,1,MPI_COMM_WORLD,&status);
         //recieve sub array size
@@ -161,17 +169,17 @@ int main(int argc, char* argv[])
         int subArrayOfPrimeNumbers[n_elements_recieved];
 
         //generate sub array
-        for(int i=0;i<n_elements_recieved;i++)
+        for(int i=0; i<n_elements_recieved; i++)
         {
             my_array[i] = my_lower_bound + i;
         }
 
         //get count of prime numbers in sub array (with excluding 1)
         int count = 0;
-        for(int i=0;i<n_elements_recieved;i++)
+        for(int i=0; i<n_elements_recieved; i++)
         {
             int flag = 0;
-            for(int j=2;j<my_array[i];j++)
+            for(int j=2; j<my_array[i]; j++)
             {
                 if(my_array[i] % j == 0)
                 {
@@ -199,8 +207,8 @@ int main(int argc, char* argv[])
             MPI_Send(&subArrayOfPrimeNumbers[i],1,MPI_INT,0,6,MPI_COMM_WORLD);
         }
 
-	}
+    }
 
     MPI_Finalize();
-	return 0;
+    return 0;
 }
