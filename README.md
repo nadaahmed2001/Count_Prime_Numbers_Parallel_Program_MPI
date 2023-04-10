@@ -15,3 +15,8 @@ Count of numbers is divisible by number of processes (15/3 = 5) so each process 
 
 Count of numbers in not divisible by number of processes (17/3) each process takes 5 numbers and master handles the remaining numbers
 ![Capture2(Send RCV)](https://user-images.githubusercontent.com/60941223/227805502-175ed4ec-481b-4e43-b8b3-a105d59feecc.JPG)
+
+
+
+### Note:
+  The non divisible case is handeled in both programs
