@@ -15,7 +15,7 @@ then compare the execution times of both programs
 Count of numbers is divisible by number of processes (15/3 = 5) so each process takes 5 numbers
 ![Capture1(Send RCV)](https://user-images.githubusercontent.com/60941223/227805501-4b4ace9a-09a1-4cfd-9001-3d70f0ae7500.JPG)
 
-Count of numbers in not divisible by number of processes (17/3) each process takes 5 numbers and master handles the remaining numbers
+Count of numbers is not divisible by number of processes (17/3) each process takes 5 numbers and master handles the remaining numbers
 ![Capture2(Send RCV)](https://user-images.githubusercontent.com/60941223/227805502-175ed4ec-481b-4e43-b8b3-a105d59feecc.JPG)
 
 
